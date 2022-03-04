@@ -14,7 +14,14 @@ const sleep = (n: number) => new Promise(res => setTimeout(res, n));
 async function glitchText(string: string) {
   const rchar = () => "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM".charAt(Math.floor(Math.random() * 52));
   const rcolor = () => chalk.ansi256(Math.floor(Math.random() * 240) + 16);
+  let inEscape = false;
   for(const char of string) {
+    if (char === '\x1b') inEscape = true;
+    else if (char.match(/[a-zA-Z]/)) inEscape = false;
+    if(inEscape) {
+      process.stdout.write(char);
+      continue;
+    }
     const r = 5 + Math.random() * 5;
     for(let i = 0; i < r; i ++) {
       process.stdout.write(rcolor()(rchar()));
@@ -29,7 +36,7 @@ async function glitchText(string: string) {
 async function slowText(string: string) {
   for(const char of string) {
     process.stdout.write(char);
-    await sleep(50);
+    await sleep(10);
   }
 }
 
@@ -55,16 +62,3 @@ export class Character {
     console.log();
   }
 }
-
-const claire = new Character({
-  name: "Claire",
-  color: 173
-});
-
-console.clear();
-process.stdout.write(ansi.cursor.down(process.stdout.rows * 2) + ansi.cursor.hide);
-
-(async () => {
-  await claire.say("Nice weather we're having!");
-  await claire.think("Nice weather we're having!");
-})();

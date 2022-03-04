@@ -1,1 +1,2 @@
-export { Engine } from './Engine';
+export { Engine } from './Engine.js';
+export { Character } from './Character.js'
